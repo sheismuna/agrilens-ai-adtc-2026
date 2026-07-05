@@ -1,0 +1,23 @@
+agrilens-ai/
+├── metadata.json              Required by ADTC. Team, model, domain, test prompts.
+├── download_model.sh          Required by ADTC. Fetches the GGUF weight file.
+├── REPORT.md                  Required by ADTC. Technical writeup for judges.
+├── .gitignore                 Required by ADTC. Excludes model/ and *.gguf.
+├── README.md                  Human-facing quickstart (not ADTC-mandated, but expected).
+├── requirements.txt           Python dependencies (all CPU-only, no heavy ML stack).
+├── model/
+│   └── (smollm3-3b-instruct-q4_k_m.gguf goes here — downloaded, never committed)
+├── data/
+│   └── agri_docs/             Source knowledge base: maize disease, pest, fertilizer,
+│                               planting, and harvest guides as plain markdown.
+├── src/
+│   ├── ingest.py               Chunks markdown docs into retrievable passages.
+│   ├── bm25_index.py            Builds and loads the BM25 retrieval index.
+│   ├── rag_pipeline.py          Combines retrieval + prompt construction.
+│   ├── llama_engine.py          Wraps llama-cpp-python model loading and inference.
+│   └── app.py                   CLI entrypoint — the actual AgriLens AI assistant.
+├── scripts/
+│   ├── build_index.sh           One-command index build.
+│   └── run_profiler.sh          One-command local ADTC profiler smoke test.
+└── tests/
+    └── test_prompts.md          Your 2 official test prompts, documented + explained.

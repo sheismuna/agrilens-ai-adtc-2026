@@ -1,0 +1,10 @@
+# Core inference — CPU-only llama.cpp Python bindings.
+# Install with prebuilt CPU wheel to avoid a slow local C++ build:
+#   pip install llama-cpp-python --prefer-binary
+llama-cpp-python>=0.2.90
+
+# Lightweight lexical retrieval — no torch, no transformers, minimal RAM.
+rank-bm25>=0.2.2
+
+# Tokenization for BM25 (simple, fast, no model download).
+nltk>=3.8.1
