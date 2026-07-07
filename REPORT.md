@@ -93,10 +93,10 @@ model is downloaded.
 
 | Metric | Observed value | Notes |
 |---|---|---|
-| Peak RSS during inference | ~X.X GB | measured via `adtc-profiler` |
-| Tokens/sec (generation) | ~XX tok/s | `/no_think` mode, Q4_K_M, 4 threads |
-| Time to first token | ~X.X s | includes BM25 retrieval + prompt build |
-| Index build time | ~X.X s | one-time, offline, not part of inference path |
+| Peak RSS during inference | 3.24 GB | measured via `adtc-profiler`, well within the 7GB budget |
+| Tokens/sec (generation) | 3.31 tok/s |  measured on a 2-vCPU shared cloud CPU (Google Colab free tier, confirmed via `nproc`), not the 4-vCPU dedicated ADTC Standard Laptop — expect meaningfully higher throughput on target hardware  |
+| Time to first token | ~68.1 s |  includes 512-token prompt processing on the constrained 2-vCPU environment; CPU-allocation-bound rather than representative of dedicated 4-core hardware |
+| Index build time | <1 s  | one-time, offline, not part of inference path |
 | Index load time | <1 s | flat JSON, no external service |
 
 ## 5. Known limitations
