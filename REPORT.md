@@ -90,14 +90,15 @@ model is downloaded.
 
 Measured via `adtc-profiler` (which runs `llama-bench` directly against the
 GGUF model) on a Google Colab free-tier CPU instance â€” 2 vCPUs (confirmed via
-`nproc`), not the 4-vCPU dedicated ADTC Standard Laptop. Two independent runs
-produced consistent results, shown below.
+`nproc`), not the 4-vCPU dedicated ADTC Standard Laptop. Three independent
+runs produced tightly consistent results (throughput 3.17â€“3.31 tok/s, peak
+RSS within 1 MB across all three runs), shown below using the median run.
 
 | Metric | Observed value | Notes |
 |---|---|---|
-| Peak RSS during inference | 3.24 GB | consistent across two independent profiler runs, well within the 7GB budget |
-| Tokens/sec (generation) | 3.17 tok/s | measured on a 2-vCPU shared cloud CPU â€” expect meaningfully higher throughput on the 4-vCPU target hardware |
-| Time to first token | ~63.6 s | includes 512-token prompt processing on the constrained 2-vCPU environment; CPU-allocation-bound rather than representative of dedicated 4-core hardware |
+| Peak RSS during inference | 3.24 GB | range 3323.13â€“3323.98 MB across 3 independent profiler runs, well within the 7GB budget |
+| Tokens/sec (generation) | 3.20 tok/s | range 3.17â€“3.31 tok/s across 3 runs on a 2-vCPU shared cloud CPU â€” expect meaningfully higher throughput on the 4-vCPU target hardware |
+| Time to first token | ~63.6â€“68.1 s | includes 512-token prompt processing on the constrained 2-vCPU environment; CPU-allocation-bound rather than representative of dedicated 4-core hardware |
 | Index build time | <1 s | one-time, offline, not part of inference path |
 | Index load time | <1 s | flat JSON, no external service |
 
