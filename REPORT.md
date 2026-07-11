@@ -1,4 +1,4 @@
-# AgriLens AI — Africa Deep Tech Challenge 2026 (Laptop LLM Track)
+﻿# AgriLens AI â€” Africa Deep Tech Challenge 2026 (Laptop LLM Track)
 
 **Domain:** Agriculture
 **Runtime:** llama.cpp
@@ -16,8 +16,8 @@ leaf, or unsure how much fertilizer to apply on a small plot, often has no fast
 way to get a reliable answer.
 
 AgriLens AI is an **offline** assistant that runs entirely on an 8 GB RAM
-laptop — the kind already common in agricultural extension offices, NGO field
-kits, and rural resource centers — and answers questions about:
+laptop â€” the kind already common in agricultural extension offices, NGO field
+kits, and rural resource centers â€” and answers questions about:
 
 - Maize disease diagnosis and treatment
 - Pest identification and management
@@ -26,7 +26,7 @@ kits, and rural resource centers — and answers questions about:
 - Harvesting and post-harvest handling
 
 The target user is a field extension worker or literate farmer using a shared
-laptop, not necessarily an individual smartphone — which matches the ADTC
+laptop, not necessarily an individual smartphone â€” which matches the ADTC
 Standard Laptop profile directly.
 
 ## 2. Design decisions
@@ -54,8 +54,8 @@ a dense embedding model for RAG. Reasoning:
 
 1. **Memory budget.** A second model resident in RAM (an embedding model) eats
    directly into the 7 GB evaluation ceiling and the Efficiency score
-   (`S_eff = 100 × ((7GB − Peak RAM) / 7GB)`). BM25 has effectively zero
-   incremental RAM cost — no torch, no transformers, no second model load.
+   (`S_eff = 100 Ã— ((7GB âˆ’ Peak RAM) / 7GB)`). BM25 has effectively zero
+   incremental RAM cost â€” no torch, no transformers, no second model load.
 2. **Domain fit.** Agriculture Q&A has high lexical overlap between queries
    and reference text (farmers and agronomy documents both use terms like
    "maize streak virus," "urea," "fall armyworm"), so BM25's term-frequency
@@ -67,14 +67,14 @@ a dense embedding model for RAG. Reasoning:
 
 ### 2.3 Packaging
 
-Single Python process: CLI app → BM25 retriever → prompt builder → llama.cpp
+Single Python process: CLI app â†’ BM25 retriever â†’ prompt builder â†’ llama.cpp
 via `llama-cpp-python` bindings, model loaded once and kept resident for the
 session. No servers, no background processes, no network calls after the
 model is downloaded.
 
 ## 3. Constraints
 
-- **Hardware:** ADTC Standard Laptop — 4 vCPU x86-64, 8 GB RAM, integrated
+- **Hardware:** ADTC Standard Laptop â€” 4 vCPU x86-64, 8 GB RAM, integrated
   graphics only, no discrete GPU. All inference is CPU-only.
 - **Memory:** Hard 7 GB ceiling; exceeding it is an automatic disqualification
   regardless of answer quality. This is the primary constraint that shaped
@@ -88,16 +88,34 @@ model is downloaded.
 
 ## 4. Benchmarks (development machine)
 
-*(Fill in with your own numbers before submitting — run
-`scripts/run_profiler.sh` and copy the relevant fields from `submission.json`.)*
+Measured via `adtc-profiler` (which runs `llama-bench` directly against the
+GGUF model) on a Google Colab free-tier CPU instance â€” 2 vCPUs (confirmed via
+`nproc`), not the 4-vCPU dedicated ADTC Standard Laptop. Two independent runs
+produced consistent results, shown below.
 
 | Metric | Observed value | Notes |
 |---|---|---|
-| Peak RSS during inference | 3.24 GB | measured via `adtc-profiler`, well within the 7GB budget |
-| Tokens/sec (generation) | 3.31 tok/s |  measured on a 2-vCPU shared cloud CPU (Google Colab free tier, confirmed via `nproc`), not the 4-vCPU dedicated ADTC Standard Laptop — expect meaningfully higher throughput on target hardware  |
-| Time to first token | ~68.1 s |  includes 512-token prompt processing on the constrained 2-vCPU environment; CPU-allocation-bound rather than representative of dedicated 4-core hardware |
-| Index build time | <1 s  | one-time, offline, not part of inference path |
+| Peak RSS during inference | 3.24 GB | consistent across two independent profiler runs, well within the 7GB budget |
+| Tokens/sec (generation) | 3.17 tok/s | measured on a 2-vCPU shared cloud CPU â€” expect meaningfully higher throughput on the 4-vCPU target hardware |
+| Time to first token | ~63.6 s | includes 512-token prompt processing on the constrained 2-vCPU environment; CPU-allocation-bound rather than representative of dedicated 4-core hardware |
+| Index build time | <1 s | one-time, offline, not part of inference path |
 | Index load time | <1 s | flat JSON, no external service |
+
+**Note on `llama-bench` vs. the live application:** `llama-bench` benchmarks
+the raw model + llama.cpp combination directly and does not go through
+`src/app.py`, so it does not reflect application-level settings such as the
+reduced `n_ctx` (4096 â†’ 2048) used in `llama_engine.py` to shrink KV-cache
+RAM for the live assistant, or the reasoning-trace suppression that keeps
+`<think>` blocks out of user-facing answers. Those changes reduce the live
+app's memory footprint and output cleanliness but do not appear in this
+particular benchmark, since it measures the model/runtime in isolation.
+
+### 4.1 Live application metrics
+
+`src/app.py` and `src/rag_pipeline.py` report per-query metrics directly in
+the CLI output (model load time, retrieval time, generation time, tokens/sec,
+approximate RSS), collected via `psutil`, so performance is visible during
+normal use, not just during a dedicated profiler run.
 
 ## 5. Known limitations
 
@@ -112,3 +130,4 @@ model is downloaded.
   explicitly instruct the model to say "I don't have information on this" 
   when no relevant document is retrieved, to reduce hallucination risk on
   out-of-corpus questions.
+
