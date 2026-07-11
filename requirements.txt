@@ -8,3 +8,6 @@ rank-bm25>=0.2.2
 
 # Tokenization for BM25 (simple, fast, no model download).
 nltk>=3.8.1
+
+# Lightweight process RAM/CPU introspection for the metrics panel.
+psutil>=5.9.0
