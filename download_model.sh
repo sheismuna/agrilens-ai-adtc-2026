@@ -15,7 +15,7 @@ MODEL_FILE="smollm3-3b-instruct-q4_k_m.gguf"
 MODEL_PATH="${MODEL_DIR}/${MODEL_FILE}"
 
 # Public Hugging Face repo, no auth token needed.
-MODEL_URL="https://huggingface.co/ggml-org/SmolLM3-3B-GGUF/resolve/main/SmolLM3-3B-Q4_K_M.gguf"
+MODEL_URL="https://huggingface.co/ggml-org/SmolLM3-3B-GGUF/resolve/main/SmolLM3-Q4_K_M.gguf"
 
 # Expected file size in bytes, used only as a sanity check (approx 1.92 GB).
 MIN_EXPECTED_BYTES=1800000000
